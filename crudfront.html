@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+        <html>
+            <head>   
+            </head>
+            <body>
+                <h2>CRUD operations using frontend(AJAX)-server(nodeJS)-midware(mongoose)-mongoDB</h2>
+        <!------------------here 3 forms are used, make sure to maintain all the IDs are different-->
+
+
+        <!---------------------getting data from the user through forms (to post in db)----------------->    
+        <form onsubmit="postData();return false;">
+            
+            <label for="">ID</label>
+            <input type="text" id="ID"> <!--ID different-->
+
+            <label for="">Film Name</label>
+            <input type="text" id="filmName">
+    
+            <label for="">Hero Name</label>
+            <input type="text" id="hero">        
+    
+            <input type="submit" value="Create Film">
+        </form><br>
+
+         <!---------------------getting data from the user through forms (to update in db)----------------->  
+        <form onsubmit="updatedata();return false;">
+            
+            <label for="">ID</label>
+            <input type="text" id="id">  <!--ID different-->
+
+            <label for="">Film Name</label>
+            <input type="text" id="FilmName">
+    
+            <label for="">Hero Name</label>
+            <input type="text" id="Hero">        
+    
+            <input type="submit" value="Update Film">
+        </form><br>
+
+         <!---------------------getting data from the user through forms (to delete in db)----------------->  
+        <form onsubmit="deletedata();return false;">
+            <label for="">ID</label>
+            <input type="text" id="Id">  <!--ID different-->
+            <input type="submit" value="delete">
+        </form><br>
+
+         <!---------------------empty div, to display the data from db after above processes like(post,update,delete)----------------->  
+        <div id="demo" style="border:2px solid black;width:500px;height:100px;overflow:scroll;"></div>
+        
+        <script>
+            function postData(){
+                //------------------------storing data in a variable as an object---------------//
+                var data ={
+                    _id :document.getElementById('ID').value,
+                    filmName :document.getElementById('filmName').value,
+                    hero :document.getElementById('hero').value,
+                }
+    //-----------------------request status----------------------------------//
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange= function(){ 
+                    if(this.readyState== 4 && this.status == 200){ 
+                        console.log("success");
+                        document.getElementById("demo").innerHTML="";
+                        getdata();
+        // document.getElementById("demo").innerHTML = this.responseText;
+                } }
+            
+    //----------------------------sending data in json type to server----------------//
+            xhttp.open("POST","http://localhost:3000/createFilm",true);
+            xhttp.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify(data));
+        }
+            function getdata(){
+    //-----------------------request status----------------------------------//
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange= function(){ 
+                if(this.readyState== 4 && this.status == 200){ 
+                    var a= JSON.parse(this.responseText)
+                    for (i=0;i<a.word.length;i++){
+                    document.getElementById("demo").innerHTML+= a.word[i].filmName+"-------"+a.word[i].hero+"<br>";
+            }
+        } }
+        //----------------------------sending request to server to get the data(in this method we will get all the data from db)----------------//
+            xhttp.open("GET","http://localhost:3000/getFilm",true);
+            xhttp.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+            xhttp.send(); 
+        }
+            function updatedata(){ 
+        //------------------------storing data in a variable as an object---------------//    
+            var update ={
+                    _id :document.getElementById('id').value,
+                    filmName :document.getElementById('FilmName').value,
+                    hero :document.getElementById('Hero').value,
+                }
+    //-----------------------request status----------------------------------//
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange= function(){ 
+                if(this.readyState== 4 && this.status == 200){
+                    console.log("Updated");
+                    document.getElementById("demo").innerHTML="";
+                    getdata();
+                    } 
+                }
+        //----------------------------sending data in json type to server(concatinating with ID in URL)----------------//   
+        var id =document.getElementById('id').value     
+        xhttp.open("PUT","http://localhost:3000/update/"+id,true);
+        xhttp.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify(update)); 
+        }
+            function deletedata(){
+           
+//-----------------------request status----------------------------------//
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange= function(){
+                 if(this.readyState== 4 && this.status == 200){
+                        console.log("Deleted");
+                        document.getElementById("demo").innerHTML="";
+                        getdata();
+                    } 
+            }
+//-----sending request to delete by, passing ID in URL thru concatination-----//
+           var Id = document.getElementById('Id').value;
+           console.log(Id)
+    xhttp.open("DELETE","http://localhost:3000/delete/"+Id,true);
+    xhttp.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+    xhttp.send(); 
+       
+}
+        </script>
+        </body>
+        </html>
